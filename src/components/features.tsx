@@ -1,53 +1,64 @@
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import type React from "react";
-import { useRef } from "react";
+import type { FunctionComponent } from "preact";
+import { useLayoutEffect, useRef } from "preact/hooks";
 
 import { explore1Img, explore2Img, exploreVideo } from "../assets";
 import { animateWithGsap } from "../utils/animations";
 
-const Features: React.FC = () => {
+const Features: FunctionComponent = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLElement | null>(null);
 
-  useGSAP(() => {
-    gsap.to("#explore-video", {
-      scrollTrigger: {
-        trigger: "#explore-video",
-        toggleActions: "play pause reverse restart",
-        start: "-10% bottom",
-      },
-      onComplete: () => {
-        videoRef.current?.play();
-      },
-    });
+  useLayoutEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
 
-    animateWithGsap("#features-title", {
-      y: 0,
-      opacity: 1,
-    });
+    const ctx = gsap.context(() => {
+      gsap.to("#explore-video", {
+        scrollTrigger: {
+          trigger: "#explore-video",
+          toggleActions: "play pause reverse restart",
+          start: "-10% bottom",
+        },
+        onComplete: () => {
+          videoRef.current?.play();
+        },
+      });
 
-    animateWithGsap(
-      ".g_grow",
-      {
-        scale: 1,
+      animateWithGsap("#features-title", {
+        y: 0,
         opacity: 1,
-        ease: "power1",
-      },
-      {
-        scrub: 5.5,
-      }
-    );
+      });
 
-    animateWithGsap(".g_text", {
-      y: 0,
-      opacity: 1,
-      ease: "power2.inOut",
-      duration: 1,
-    });
+      animateWithGsap(
+        ".g_grow",
+        {
+          scale: 1,
+          opacity: 1,
+          ease: "power1",
+        },
+        {
+          scrub: 5.5,
+        }
+      );
+
+      animateWithGsap(".g_text", {
+        y: 0,
+        opacity: 1,
+        ease: "power2.inOut",
+        duration: 1,
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section className="common-padding relative h-full overflow-hidden bg-zinc">
+    <section
+      className="common-padding relative h-full overflow-hidden bg-zinc"
+      ref={containerRef}
+    >
       <div className="screen-max-width">
         <div className="mb-12 w-full">
           <h1 className="section-heading" id="features-title">

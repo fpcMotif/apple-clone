@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
-import type { RefObject } from "react";
+import type { RefObject } from "preact";
 import type * as THREE from "three";
 
 gsap.registerPlugin(ScrollTrigger);

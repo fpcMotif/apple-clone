@@ -1,8 +1,8 @@
-import type React from "react";
+import type { FunctionComponent } from "preact";
 
 import { footerLinks } from "../constants";
 
-const Footer: React.FC = () => (
+const Footer: FunctionComponent = () => (
   <footer className="p-5 sm:px-10">
     <div className="screen-max-width">
       <div className="">

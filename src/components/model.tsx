@@ -1,22 +1,19 @@
-import { useGSAP } from "@gsap/react";
-import { type OrbitControls, View } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
 import gsap from "gsap";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import { Group } from "three";
 import { type Model, models, sizes } from "../constants";
 import { animateWithGsapTimeline } from "../utils/animations";
 import ModelView from "./model-view";
 
-const ModelComponent: React.FC = () => {
+const ModelComponent = () => {
   const [size, setSize] = useState<"small" | "large">("small");
   const [model, setModel] = useState<Model>(models[0]);
 
-  // camera control for the model view
-  const cameraControlSmall = useRef<OrbitControls>(null);
-  const cameraControlLarge = useRef<OrbitControls>(null);
+  // camera control for the model view (kept for compatibility but not used in native Three.js)
+  const cameraControlSmall = useRef<unknown>(null);
+  const cameraControlLarge = useRef<unknown>(null);
 
-  // model
+  // model (kept for GSAP animations)
   const small = useRef<Group>(new Group());
   const large = useRef<Group>(new Group());
 
@@ -54,17 +51,20 @@ const ModelComponent: React.FC = () => {
     }
   }, [size, largeRotation, smallRotation, tl]);
 
-  useGSAP(() => {
-    gsap.to("#heading", { y: 0, opacity: 1 });
+  const containerRef = useRef<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+    const ctx = gsap.context(() => {
+      gsap.to("#heading", { y: 0, opacity: 1 });
+    }, containerRef);
+    return () => ctx.revert();
   }, []);
 
-  const rootElement = document.getElementById("root");
-  if (!rootElement) {
-    throw new Error("Root element not found");
-  }
-
   return (
-    <section className="common-padding">
+    <section className="common-padding" ref={containerRef}>
       <div className="screen-max-width">
         <h1 className="section-heading" id="heading">
           Take a closer look.
@@ -91,21 +91,6 @@ const ModelComponent: React.FC = () => {
               setRotationState={setLargeRotation}
               size={size}
             />
-
-            <Canvas
-              className="h-full w-full"
-              eventSource={rootElement}
-              style={{
-                position: "fixed",
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                overflow: "hidden",
-              }}
-            >
-              <View.Port />
-            </Canvas>
           </div>
 
           <div className="mx-auto w-full">

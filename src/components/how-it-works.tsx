@@ -1,36 +1,44 @@
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import type React from "react";
-import { useRef } from "react";
+import type { FunctionComponent } from "preact";
+import { useLayoutEffect, useRef } from "preact/hooks";
 
 import { chipImg, frameImg, frameVideo } from "../assets";
 import { animateWithGsap } from "../utils/animations";
 
-const HowItWorks: React.FC = () => {
+const HowItWorks: FunctionComponent = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLElement | null>(null);
 
-  useGSAP(() => {
-    gsap.from("#chip", {
-      scrollTrigger: {
-        trigger: "#chip",
-        start: "20% bottom",
-      },
-      opacity: 0,
-      scale: 2,
-      duration: 2,
-      ease: "power2.inOut",
-    });
+  useLayoutEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
 
-    animateWithGsap(".g_fadeIn", {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      ease: "power2.inOut",
-    });
+    const ctx = gsap.context(() => {
+      gsap.from("#chip", {
+        scrollTrigger: {
+          trigger: "#chip",
+          start: "20% bottom",
+        },
+        opacity: 0,
+        scale: 2,
+        duration: 2,
+        ease: "power2.inOut",
+      });
+
+      animateWithGsap(".g_fadeIn", {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: "power2.inOut",
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section className="common-padding">
+    <section className="common-padding" ref={containerRef}>
       <div className="screen-max-width">
         <div className="my-20 w-full flex-center" id="chip">
           <img alt="Chip" height={180} src={chipImg} width={180} />

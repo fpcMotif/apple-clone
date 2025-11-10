@@ -1,20 +1,31 @@
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import type React from "react";
+import type { FunctionComponent } from "preact";
+import { useLayoutEffect, useRef } from "preact/hooks";
 
 import { rightImg, watchImg } from "../assets";
 import VideoCarousel from "./video-carousel";
 
-const Highlights: React.FC = () => {
-  useGSAP(() => {
-    gsap.to("#title", { opacity: 1, y: 0 });
-    gsap.to(".link", { opacity: 1, y: 0, duration: 1, stagger: 0.25 });
+const Highlights: FunctionComponent = () => {
+  const containerRef = useRef<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.to("#title", { opacity: 1, y: 0 });
+      gsap.to(".link", { opacity: 1, y: 0, duration: 1, stagger: 0.25 });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
     <section
       className="common-padding h-full w-screen overflow-hidden bg-zinc"
       id="highlights"
+      ref={containerRef}
     >
       <div className="screen-max-width">
         <div className="mb-12 flex w-full flex-col gap-6 md:flex-row md:items-end md:justify-between">

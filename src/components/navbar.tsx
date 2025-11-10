@@ -1,9 +1,9 @@
-import type React from "react";
+import type { FunctionComponent } from "preact";
 
 import { appleImg, bagImg, githubImg, searchImg } from "../assets";
 import { navLists, sourceCode } from "../constants";
 
-const Navbar: React.FC = () => (
+const Navbar: FunctionComponent = () => (
   <header className="flex w-full items-center justify-between p-5 sm:px-10">
     <nav className="screen-max-width flex w-full">
       <button type="button">

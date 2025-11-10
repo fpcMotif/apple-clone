@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/crates/oxc_linter/schemas/oxlintrc.schema.json",
+  "extends": ["oxlint:recommended", "oxlint:react", "oxlint:typescript"],
+  "rules": {
+    "no-unused-vars": "error",
+    "no-console": "error",
+    "react/jsx-key": "error",
+    "react/no-unknown-property": "error",
+    "@typescript-eslint/no-unused-vars": "off"
+  },
+  "typescript": {
+    "project": ["./tsconfig.json"]
+  }
+}

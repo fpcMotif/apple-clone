@@ -1,69 +1,39 @@
-import { OrbitControls, PerspectiveCamera, View } from "@react-three/drei";
-import { Suspense } from "react";
+import type { FunctionComponent } from "preact";
 import type { Group } from "three";
-import { Vector3 } from "three";
-import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
 import type { Model } from "../constants";
-import IPhone from "./i-phone";
-import Lights from "./lights";
-import Loader from "./loader";
+import ThreePhoneView from "../three/three-phone-view";
 
 type ModelViewProps = {
   index: number;
-  groupRef: React.RefObject<Group>;
+  groupRef: { current: Group | null };
   gsapType: string;
-  controlRef: React.RefObject<OrbitControlsImpl>;
-  setRotationState: React.Dispatch<React.SetStateAction<number>>;
+  controlRef: { current: unknown };
+  setRotationState: (rotation: number) => void;
   size: "small" | "large";
   item: Model;
 };
 
-const ModelView: React.FC<ModelViewProps> = ({
+const ModelView: FunctionComponent<ModelViewProps> = ({
   index,
-  groupRef,
+  groupRef: _groupRef,
   gsapType,
-  controlRef,
+  controlRef: _controlRef,
   setRotationState,
   size,
   item,
-}) => {
-  return (
-    <View
-      className={`absolute h-full w-full ${index === 2 ? "right-[-100%]" : ""}`}
-      id={gsapType}
+}) => (
+  <div
+    className={`absolute h-full w-full ${index === 2 ? "right-[-100%]" : ""}`}
+    id={gsapType}
+  >
+    <ThreePhoneView
       index={index}
-    >
-      {/* Ambient Light */}
-      <ambientLight intensity={0.3} />
-
-      <PerspectiveCamera makeDefault position={[0, 0, 4]} />
-
-      <Lights />
-
-      <OrbitControls
-        enablePan={false}
-        enableZoom={false}
-        makeDefault
-        onEnd={() =>
-          setRotationState(controlRef.current?.getAzimuthalAngle() ?? 0)
-        }
-        ref={controlRef}
-        rotateSpeed={0.4}
-        target={new Vector3(0, 0, 0)}
-      />
-
-      <group
-        name={index === 1 ? "small" : "large"}
-        position={[0, 0, 0]}
-        ref={groupRef}
-      >
-        <Suspense fallback={<Loader />}>
-          <IPhone item={item} scale={index === 1 ? 15 : 17} size={size} />
-        </Suspense>
-      </group>
-    </View>
-  );
-};
+      item={item}
+      setRotationState={setRotationState}
+      size={size}
+    />
+  </div>
+);
 
 export default ModelView;

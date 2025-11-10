@@ -1,7 +1,6 @@
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import type { FunctionComponent } from "preact";
+import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 
 import { pauseImg, playImg, replayImg } from "../assets";
 import { hightlightsSlides } from "../constants";
@@ -14,7 +13,7 @@ type VideoState = {
   isPlaying: boolean;
 };
 
-const VideoCarousel: React.FC = () => {
+const VideoCarousel: FunctionComponent = () => {
   const videoRef = useRef<(HTMLVideoElement | null)[]>([]);
   const videoSpanRef = useRef<(HTMLSpanElement | null)[]>([]);
   const videoDivRef = useRef<(HTMLSpanElement | null)[]>([]);
@@ -26,32 +25,38 @@ const VideoCarousel: React.FC = () => {
     isLastVideo: false,
     isPlaying: false,
   });
-  const [loadedData, setLoadedData] = useState<
-    React.SyntheticEvent<HTMLVideoElement>[]
-  >([]);
+  const [loadedData, setLoadedData] = useState<Event[]>([]);
 
-  const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
+  const { isLastVideo, startPlay, videoId, isPlaying } = video;
 
-  useGSAP(() => {
-    gsap.to("#slider", {
-      transform: `translateX(${-100 * videoId}%)`,
-      duration: 2,
-      ease: "power2.inOut",
-    });
-    gsap.to("#video", {
-      scrollTrigger: {
-        trigger: "#video",
-        toggleActions: "restart none none none",
-      },
-      onComplete: () => {
-        setVideo((pre) => ({
-          ...pre,
-          startPlay: true,
-          isPlaying: true,
-        }));
-      },
-    });
-  }, [isEnd, videoId]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+    const ctx = gsap.context(() => {
+      gsap.to("#slider", {
+        transform: `translateX(${-100 * videoId}%)`,
+        duration: 2,
+        ease: "power2.inOut",
+      });
+      gsap.to("#video", {
+        scrollTrigger: {
+          trigger: "#video",
+          toggleActions: "restart none none none",
+        },
+        onComplete: () => {
+          setVideo((pre) => ({
+            ...pre,
+            startPlay: true,
+            isPlaying: true,
+          }));
+        },
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, [videoId]);
 
   useEffect(() => {
     if (loadedData.length > 3) {
@@ -63,10 +68,7 @@ const VideoCarousel: React.FC = () => {
     }
   }, [startPlay, videoId, isPlaying, loadedData]);
 
-  const handleLoadedMetadata = (
-    _i: number,
-    e: React.SyntheticEvent<HTMLVideoElement>
-  ) => {
+  const handleLoadedMetadata = (_i: number, e: Event) => {
     setLoadedData((pre) => [...pre, e]);
   };
 
@@ -174,7 +176,7 @@ const VideoCarousel: React.FC = () => {
   };
 
   return (
-    <>
+    <div ref={containerRef}>
       <div className="flex-center">
         <h1 className="special-head">iPhone 15 Pro</h1>
       </div>
@@ -264,7 +266,7 @@ const VideoCarousel: React.FC = () => {
           />
         </button>
       </div>
-    </>
+    </div>
   );
 };
 

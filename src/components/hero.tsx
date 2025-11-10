@@ -1,14 +1,20 @@
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import type { FunctionComponent } from "preact";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "preact/hooks";
 
 import { heroVideo, smallHeroVideo } from "../assets";
 
-const Hero: React.FC = () => {
+const Hero: FunctionComponent = () => {
   const [videoSrc, setVideoSrc] = useState<string>(
     window.innerWidth < 760 ? smallHeroVideo : heroVideo
   );
+  const containerRef = useRef<HTMLElement | null>(null);
 
   const handleVideoSrcSet = useCallback((): void => {
     if (window.innerWidth < 760) {
@@ -24,21 +30,32 @@ const Hero: React.FC = () => {
     return () => window.removeEventListener("resize", handleVideoSrcSet);
   }, [handleVideoSrcSet]);
 
-  useGSAP(() => {
-    gsap.to("#hero", {
-      opacity: 1,
-      delay: 2,
-    });
+  useLayoutEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
 
-    gsap.to("#cta", {
-      opacity: 1,
-      y: -50,
-      delay: 2,
-    });
+    const ctx = gsap.context(() => {
+      gsap.to("#hero", {
+        opacity: 1,
+        delay: 2,
+      });
+
+      gsap.to("#cta", {
+        opacity: 1,
+        y: -50,
+        delay: 2,
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section className="nav-height relative flex w-full flex-col items-center justify-center bg-black">
+    <section
+      className="nav-height relative flex w-full flex-col items-center justify-center bg-black"
+      ref={containerRef}
+    >
       <div className="flex w-full flex-col items-center gap-10">
         <p className="hero-title" id="hero">
           iPhone 15 Pro
