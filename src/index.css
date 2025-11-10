@@ -1,6 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-blue: #2997ff;
+  --color-gray: #86868b;
+  --color-gray-100: #94928d;
+  --color-gray-200: #afafaf;
+  --color-gray-300: #42424570;
+  --color-zinc: #101010;
+}
 
 * {
   margin: 0;
@@ -67,7 +74,7 @@ canvas {
   }
 
   .feature-text-container {
-    @apply w-full flex-center flex-col md:flex-row mt-10 md:mt-16 gap-5;
+    @apply w-full flex items-center justify-center flex-col md:flex-row mt-10 md:mt-16 gap-5;
   }
 
   .feature-video {
@@ -79,11 +86,11 @@ canvas {
   }
 
   .link {
-    @apply text-blue hover:underline cursor-pointer flex items-center text-xl opacity-0 translate-y-20;
+    @apply inline-flex items-center gap-2 text-base font-medium text-blue opacity-0 translate-y-20 transition-colors duration-200 md:text-lg hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue/60;
   }
 
   .control-btn {
-    @apply ml-4 p-4 rounded-full bg-gray-300 backdrop-blur flex-center;
+    @apply ml-4 p-4 rounded-full bg-gray-300 backdrop-blur flex items-center justify-center;
   }
 
   .hero-title {
@@ -103,11 +110,11 @@ canvas {
   }
 
   .hiw-text-container {
-    @apply flex md:flex-row flex-col justify-between items-start gap-24;
+    @apply flex md:flex-row flex-col justify-between items-start gap-12 md:gap-24;
   }
 
   .hiw-text {
-    @apply text-gray text-xl font-normal md:font-semibold;
+    @apply text-gray text-xl font-normal leading-relaxed md:font-semibold;
   }
 
   .hiw-bigtext {
